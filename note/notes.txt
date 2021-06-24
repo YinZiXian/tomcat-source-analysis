@@ -39,6 +39,6 @@ conf目录:
     logging.properties: Tomcat6通过自己内部实现的JAVA日志记录器来记录操作相关的日志，此文件即为日志记录器相关的配置信息，可以用来定义日志记录的组件级别以及日志文件的存在位置等；
     context.xml:所有host的默认配置信息
 
-Tomcat启动过程;
-
+Tomcat启动流程;
+    startup.bat -> catalina.bat -> BootStrap -> Catalina -> Server -> Service -> Executor -> Engine -> Host -> Context -> Connector -> ProtocolHandler
 
