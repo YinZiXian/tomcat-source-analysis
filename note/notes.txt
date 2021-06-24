@@ -1,0 +1,44 @@
+Tomcat:
+    一个JSP/Servlet容器,有三种工作模式:独立的Servlet容器,进程内的Servlet容器和进程外的Servlet容器
+
+Tomcat组件;Tomcat整个生命周期由Server控制,Server维护管理多个Service(接口), 每个Service包含一个Container(Engine extends Container extends Lifecycle)和多个Connector(Connector extends LifecycleMBeanBase implements Lifecycle )
+    Server组件:
+        Service:组装Connector和Container,可以设置一个Container和多个Connector,可以返回一个Container或Connector数组
+            Container:接口,定义了下属容器,包括Engine,Host,Context,Wrapper等
+                Engine:负责处理来自相关联的Service的所有请求.提供了DefaultHost,JvmRoute和Service的getset方法
+                Host:代表一个虚拟主机.虚拟主机下可部署一个或多个web应用.Host获得请求时,将请求匹配到某个Context上并交给其处理,匹配方法是最长匹配,path==""的Context将成为该Host的默认Context.
+                Context:对应一个web应用.web应用由多个Servlet组成,Context获得请求时,在自己的映射表里寻找匹配的Servlet类,找到则执行该类
+                Wrapper:代表一个Servlet,是最底层的容器.负责Servlet的装载,初始化执行以及资源回收.实现类是StandardWrapper,StandardWrapper实现了一个拥有Servlet初始化信息的ServletConfig.
+            Connector:在某个指定端口监听请求,把socket传递过来的数据,封装成Request,传递给Engine处理,并从Engine获得响应返回
+                Http Connector 在端口8080处侦听来自客户browser的http请求。
+                AJP Connector 在端口8009处侦听来自其它WebServer(Apache)的servlet/jsp代理请求。
+            Lifecycle:定义了三个管理监听器的方法,四个生命周期方法和获取当前状态的两个方法以及13个String常量
+                LifecycleListener:生命周期监听器
+                LifecycleEvent:当有监听事件发生的时候，LifecycleEvent会存储时间类型和数据
+
+
+conf目录:
+    server.xml:Tomcat的主配置文件,包含Service,Connector,Engine,Realm,Valve,Hosts著组件的相关配置信息
+        Connector组件:负责接收客户端连接和客户端请求的处理加工。每个Connector都将指定一个端口进行监听，分别负责对请求报文的解析和响应报文组装，解析过程生成Request对象，而组装过程涉及Response对象；
+            默认:
+                <Connector port="8080" protocol="HTTP/1.1"
+                           connectionTimeout="20000"
+                           redirectPort="8443" />
+            1) address：指定连接器监听的地址，默认为所有地址，即0.0.0.0； 可以自己指定
+            2) maxThreads：支持的最大并发连接数，默认为200；
+            3) port：监听的端口，默认为0；
+            4) protocol：连接器使用的协议，默认为HTTP/1.1，定义AJP协议时通常为AJP/1.3；
+            5) redirectPort：如果某连接器支持的协议是HTTP，当接收客户端发来的HTTPS请求时，则转发至此属性定义的端口；
+            6) connectionTimeout：等待客户端发送请求的超时时间，单位为毫秒，tomcat9.0.48默认为20000；
+            7) enableLookups：是否通过request.getRemoteHost()进行DNS查询以获取客户端的主机名；默认为true； 进行反解的，可以设置为false
+            8) acceptCount：设置等待队列的最大长度；通常在tomcat所有处理线程均处于繁忙状态时，新发来的请求将被放置于等待队列中；
+    web.xml;遵循Servlet规范标准的配置文件,用于配置Servlet,并为所有的Web应用程序提供包括MIME映射等默认信息
+    tomcat-users.xml:Realm认证时用到的相关角色,用户和密码等信息;Tomcat自带的manager默认情况下会用到此文件;可以在tomcat中添加/删除用户,为用户指定角色
+    catalina.policy:Java相关的安全策略配置文件,在系统资源级别上提供访问控制的能力
+    catalina.properties：Tomcat内部package的定义及访问相关控制，也包括对通过类装载器装载的内容的控制；Tomcat在启动时会事先读取此文件的相关设置；
+    logging.properties: Tomcat6通过自己内部实现的JAVA日志记录器来记录操作相关的日志，此文件即为日志记录器相关的配置信息，可以用来定义日志记录的组件级别以及日志文件的存在位置等；
+    context.xml:所有host的默认配置信息
+
+Tomcat启动过程;
+
+
